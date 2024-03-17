@@ -68,7 +68,7 @@
                             'type' : 'number'
                             },
                             'local_atendimento' : {
-                            'required' : True,
+                            'required' : False,
                             'type' : 'number'
                             }
                         }

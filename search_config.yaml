@@ -1,16 +1,15 @@
 - search:
-    title: 'IRN Nacionalidade'
-    max_days: 7
-    frequency: 3
+    title: 'IRN Nacionalidade Lisboa'
+    max_days: 15
+    frequency: 5
     entity_opt: 176
     service_opt:
       tema: 22061
       subtema: 22062
       motivo: 22066
     location_opt:
-      distrito: 43
-      localidade: 2
-      local_atendimento: 1062
+      distrito: 11
+      localidade: -1
 - search:
     start_time: '07:00'
     end_time: '23:59'

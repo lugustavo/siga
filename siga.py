@@ -269,7 +269,7 @@ def set_district(driver, p_distrito):
         log.info(OPT_SELECT_MSG , select.first_selected_option.text)
         return select.first_selected_option.text
     except NoSuchElementException as no_element:
-        err_msg = NO_ELEMENT_MSG % (select.first_selected_option.text, \
+        err_msg = NO_ELEMENT_MSG % (p_distrito, \
                      type(no_element).__name__, no_element)
         log.critical(msg=err_msg)
         now = datetime.now().strftime('%d%m%Y_%H%M%S')
@@ -290,7 +290,7 @@ def set_local(driver, p_localidade):
         log.info(OPT_SELECT_MSG , select.first_selected_option.text)
         return select.first_selected_option.text
     except NoSuchElementException as no_element:
-        err_msg = NO_ELEMENT_MSG % (select.first_selected_option.text, \
+        err_msg = NO_ELEMENT_MSG % (p_localidade, \
                      type(no_element).__name__, no_element)
         log.critical(msg=err_msg)
         now = datetime.now().strftime('%d%m%Y_%H%M%S')
@@ -311,7 +311,7 @@ def set_service_desk(driver, p_local_atendimento):
         log.info(OPT_SELECT_MSG , select.first_selected_option.text)
         return select.first_selected_option.text
     except NoSuchElementException as no_element:
-        err_msg = NO_ELEMENT_MSG % (select.first_selected_option.text, \
+        err_msg = NO_ELEMENT_MSG % (p_local_atendimento, \
                      type(no_element).__name__, no_element)
         log.critical(msg=err_msg)
         now = datetime.now().strftime('%d%m%Y_%H%M%S')
@@ -542,7 +542,7 @@ def check_schedule(driver, config_instance) -> NotificationData:
             # Step 3: Set district, local, and service desk
             msg_header.set_district(set_district(driver, l_distrito))
             msg_header.set_local(set_local(driver, l_localidade))
-            if l_localidade not in ['ALL PLACES', 'TODAS AS LOCALIDADES'] and l_local_atendimento:
+            if l_localidade > 0 and l_local_atendimento:
                 msg_header.set_service_desk(set_service_desk(driver, l_local_atendimento))
             driver.get_screenshot_as_file(l_screen_shot.format(3))
             set_step_three(driver)
@@ -558,6 +558,7 @@ def check_schedule(driver, config_instance) -> NotificationData:
 
     except WebDriverException as wd:
         log.error('WebDriverException in check_schedule: %s', wd)
+        log_exception(wd)
     except Exception as ex:
         log.error('Exception in check_schedule: %s', ex)
         raise
@@ -589,7 +590,7 @@ def main() -> None:
         log.info('Scheduling configured for: %s', config_instance.get_value_by_key('title'))
         sd.every(frequency_opt).minutes.do(task,
                                            config_instance) \
-                                            .tag('daily-tasks',
+                                            .tag('siga-tasks',
                                                  config_instance.get_value_by_key('title'))
 
     check_dotenv_siga()
