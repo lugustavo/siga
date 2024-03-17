@@ -1,0 +1,51 @@
+- search:
+    title: 'IRN Nacionalidade'
+    max_days: 7
+    frequency: 3
+    entity_opt: 176
+    service_opt:
+      tema: 22061
+      subtema: 22062
+      motivo: 22066
+    location_opt:
+      distrito: 43
+      localidade: 2
+      local_atendimento: 1062
+- search:
+    start_time: '07:00'
+    end_time: '23:59'
+    max_days: 7
+    frequency: 3
+    entity_opt: 176
+    service_opt:
+      tema: 22002
+      subtema: 22003
+      motivo: 22705
+    location_opt:
+      distrito: 11
+      localidade: 17
+      local_atendimento: 591
+- search:
+    max_days: 7
+    frequency: 3
+    entity_opt: 176
+    service_opt:
+      tema: 22002
+      subtema: 22003
+      motivo: 22705
+    location_opt:
+      distrito: 11
+      localidade: 6
+      local_atendimento: 889
+- search:
+    max_days: 7
+    frequency: 3
+    entity_opt: 176
+    service_opt:
+      tema: 22002
+      subtema: 22003
+      motivo: 22705
+    location_opt:
+      distrito: 11
+      localidade: 10
+      local_atendimento: 554
