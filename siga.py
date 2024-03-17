@@ -45,8 +45,6 @@ ENV_VARS = EnvironmentVariables()
 os.environ["PYTHONHTTPSVERIFY"] = "0"
 
 TIME_SLOT_LIST = collections.defaultdict(list)
-DAYS_MAX_DEFAULT = 7
-FREQ_MIN_DEFAULT = 5
 opt = {}
 
 OPT_SELECT_MSG = 'Opção "%s" selecionada com sucesso!'
@@ -84,55 +82,9 @@ def check_dotenv_siga():
         log.info('Messages to Telegram will be sent.')
 
 
-def load_yaml_config():
-    """Function to load yaml search config files."""
-    yaml_file_name = 'search_config.yaml'
-    keys_msg = 'Not all keys are present in the %s'
-    keys_missing = 'Missing keys: %s. Skipping config #%s'
-
-    if os.path.isfile(yaml_file_name):
-        log.info("Found an yaml configuration file")
-        with open(yaml_file_name, "r", encoding='utf8') as yamlfile:
-            data = yaml.load(yamlfile, Loader=yaml.FullLoader)
-            log.info("Loaded the yaml file configuration. Contains %s configuration(s)" , len(data))
-
-        keys_to_check_service = ['tema', 'subtema', 'motivo']
-        keys_to_check_location = ['distrito', 'localidade', 'local_atendimento']
-
-        for index, search in enumerate(data, start=1):
-
-            days_max = int(search.get('search').get('max_days'))
-            if not days_max:
-                days_max = DAYS_MAX_DEFAULT
-
-            frequency_opt = int(search.get('search').get('frequency'))
-            if not frequency_opt:
-                frequency_opt = FREQ_MIN_DEFAULT
-
-            entity_opt =search.get('search').get('entity_opt')
-            if not entity_opt:
-                log.info(keys_missing, 'entity_opt', index)
-                continue
-
-            service_opt = search.get('search').get('service_opt')
-            location_opt = search.get('search').get('location_opt')
-            diff_service = (set(keys_to_check_service) - set(service_opt))
-            diff_location = (set(keys_to_check_location) - set(location_opt))
-            if diff_service or len(service_opt) < 3:
-                log.info(keys_msg , 'options list')
-                log.info(keys_missing , diff_service, index)
-                continue
-            if diff_location or len(location_opt) < 3:
-                log.info(keys_msg , 'location list')
-                log.info(keys_missing , diff_location, index)
-                continue
-            log.info('Config #%s validated.' , index)
-            yield frequency_opt, entity_opt, service_opt, location_opt, days_max
-
-
 def usage():
     """Function to print the usage of this program."""
-    print('siga.py -e, --entity (String)<Entity> -s, \
+    print('siga.py -e, --entity (Int)<Entity> -s, \
           --service (dict)<{number values from drop lists}> -l, \
           --location (dict)<{String values from drop lists}>')
 

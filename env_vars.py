@@ -36,7 +36,7 @@ class EnvironmentVariables:
         """
         Initialize the EnvironmentVariables object and load environment variables.
         """
-        load_dotenv()
+        load_dotenv(override=True)
         self.bot_token = os.getenv("BOT_TOKEN")
         self.bot_chat_id = os.getenv("BOT_CHAT_ID")
 
