@@ -1,0 +1,78 @@
+{
+'search' :  {
+        'require_all' : True,
+        'type' : 'dict',
+        'keysrules': {'type': 'string',
+                      'regex': '[a-z][a-z\d._]*'},
+        'schema' : {
+            'title' : {
+                'required' : False,
+                'type' : 'string',
+                'empty': True,
+                'default' : 'Unnamed SIGA Search'
+            },'start_time' : {
+                'required' : False,
+                'type' : 'string',
+                'regex': '^((?:[01]\d|2[0-3]):[0-5]\d$)',
+                'default' : '07:00'
+            },'end_time' : {
+                'required' : False,
+                'type' : 'string',
+                'regex': '^((?:[01]\d|2[0-3]):[0-5]\d$)',
+                'default' : '23:59'
+            },'max_days' : {
+                'required' : False,
+                'type' : 'number',
+                'default' : '90',
+                'max' : 90
+            },
+            'frequency' : {
+                'required' : False,
+                'type' : 'number',
+                'default' : '3',
+                'min' : 2,
+                'max' : 10
+            },
+            'entity_opt' : {
+                'required' : True,
+                'type' : 'number'
+            },
+            'service_opt' : {
+                        'required' : True,
+                        'type' : 'dict',
+                        'schema' : {
+                            'tema' : {
+                            'required' : True,
+                            'type' : 'number'
+                            },
+                            'subtema' : {
+                            'required' : True,
+                            'type' : 'number'
+                            },
+                            'motivo' : {
+                            'required' : True,
+                            'type' : 'number'
+                            }
+                        }
+            },
+            'location_opt' : {
+                        'required' : True,
+                        'type' : 'dict',
+                        'schema' : {
+                            'distrito' : {
+                            'required' : True,
+                            'type' : 'number'
+                            },
+                            'localidade' : {
+                            'required' : True,
+                            'type' : 'number'
+                            },
+                            'local_atendimento' : {
+                            'required' : True,
+                            'type' : 'number'
+                            }
+                        }
+            }
+        }
+}
+}
