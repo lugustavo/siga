@@ -179,8 +179,8 @@ def close_chrome(p_driver):
     p_driver.quit()
 
 
-def set_entity(driver, p_entity):
-    """Function to set entity field."""
+def find_and_click_entity_button(driver, p_entity):
+    """Find and click the entity button."""
     btn_label = ''
     if check_elem_exists(driver, By.CLASS_NAME, "btn-selecionar-entidade"):
         btn_entity_lst = driver.find_elements(By.XPATH,
@@ -192,17 +192,25 @@ def set_entity(driver, p_entity):
                         btn_label = btn.get_attribute("title")
                         btn.click()
                         log.info('Botão "%s" clicado com sucesso!', btn_label)
-                        break
+                        return btn_label
                     except WebDriverException as webd_except:
                         log.critical(webd_except)
                         raise webd_except
-    else:
+    return btn_label
+
+
+def set_entity(driver, p_entity):
+    """Function to set entity field."""
+    btn_label = find_and_click_entity_button(driver, p_entity)
+
+    if not btn_label:
         err_msg = f"Cannot find Entity '{p_entity}' button."
         log.critical(err_msg)
         now = datetime.now().strftime('%d%m%Y_%H%M%S')
         file_name = LOG_WEBDRIVER_ERROR % (set_entity.__name__, now)
         driver.get_screenshot_as_file(filename=file_name)
-        raise NoSuchElementException(err_msg + ' Please check if the webpage is normally working')
+        raise NoSuchElementException(err_msg + '. Please check if the webpage is working')
+
     return btn_label
 
 
