@@ -9,7 +9,6 @@ from datetime import datetime, timedelta
 
 import logging as log
 import requests
-import yaml
 
 import schedule as sd
 from notifypy import Notify
@@ -35,14 +34,11 @@ from env_vars import EnvironmentVariables
 from yaml_loader import YamlLoader
 from notif_data import NotificationData
 
-
 __version__ = "0.01.01"
 
 # Create an instance of the EnvironmentVariables class
 # which loads environment variables from .env file
 ENV_VARS = EnvironmentVariables()
-
-os.environ["PYTHONHTTPSVERIFY"] = "0"
 
 TIME_SLOT_LIST = collections.defaultdict(list)
 opt = {}
@@ -136,9 +132,9 @@ def start_chrome():
     test_ua = 'Mozilla/5.0 (Windows NT 4.0; WOW64) AppleWebKit/537.36 \
     (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
 
-    #options.add_argument("--start-maximized")  # for debug purposes
     # Command line arguments for Chrome
     options_args = [
+        # '--start-maximized'
         '--headless',
         '--window-size=1920,1080',
         '--disable-gpu',
@@ -179,7 +175,7 @@ def start_chrome():
 
 def close_chrome(p_driver):
     """Function to close chrome browser."""
-    log.info('Quiting webdriver')
+    log.info('Quitting webdriver')
     p_driver.quit()
 
 
@@ -217,6 +213,7 @@ def set_district(driver, p_distrito):
             EC.visibility_of_element_located((By.ID, 'IdDistrito'))
         )
         select = Select(id_distrito_select)
+        time.sleep(2)
         select.select_by_value(str(p_distrito))
         log.info(OPT_SELECT_MSG , select.first_selected_option.text)
         return select.first_selected_option.text
@@ -237,7 +234,7 @@ def set_local(driver, p_localidade):
             EC.visibility_of_element_located((By.ID, 'IdLocalidade'))
         )
         select = Select(id_localidade)
-        time.sleep(1)
+        time.sleep(2)
         select.select_by_value(str(p_localidade))
         log.info(OPT_SELECT_MSG , select.first_selected_option.text)
         return select.first_selected_option.text
@@ -258,7 +255,7 @@ def set_service_desk(driver, p_local_atendimento):
             EC.visibility_of_element_located((By.ID, 'IdLocalAtendimento'))
         )
         select = Select(id_local_atendimento)
-        time.sleep(1)
+        time.sleep(2)
         select.select_by_value(str(p_local_atendimento))
         log.info(OPT_SELECT_MSG , select.first_selected_option.text)
         return select.first_selected_option.text
@@ -299,7 +296,7 @@ def set_category(driver, p_category):
             EC.visibility_of_element_located((By.ID, 'IdCategoria'))
         )
         select = Select(id_category_select)
-        time.sleep(1)
+        time.sleep(2)
         select.select_by_value(str(p_category))
         log.info(OPT_SELECT_MSG , select.first_selected_option.text)
         return select.first_selected_option.text
@@ -319,7 +316,7 @@ def set_subcategory(driver, p_subcategory):
             EC.visibility_of_element_located((By.ID, 'IdSubcategoria'))
         )
         select = Select(id_subcategory_select)
-        time.sleep(1)
+        time.sleep(2)
         select.select_by_value(str(p_subcategory))
         txt = select.first_selected_option.text
         log.info(OPT_SELECT_MSG , txt)
@@ -336,11 +333,11 @@ def set_subcategory(driver, p_subcategory):
 def set_motive(driver, p_motive):
     """Function to set motive field."""
     try:
-        id_motive_select = WebDriverWait(driver, 20).until(
+        id_motive_select = WebDriverWait(driver, 30).until(
             EC.visibility_of_element_located((By.ID, 'IdMotivo'))
         )
         select = Select(id_motive_select)
-        time.sleep(1)
+        time.sleep(2)
         select.select_by_value(str(p_motive))
         txt = select.first_selected_option.text
         log.info(OPT_SELECT_MSG , txt)
@@ -402,17 +399,7 @@ def check_elem_exists(parent, by, selector, wait=False, timeout=False):
     return ret
 
 def word_in_center(string):
-    """Function to print a string in center.
-    # total_dash_length = 100
-    # word_length = len(string)
-    # remaining_dash_length = total_dash_length - word_length
-
-    # Calculate the number of dashes needed on each side of the word
-    # left_dash_count = remaining_dash_length // 2
-    # right_dash_count = remaining_dash_length - left_dash_count
-
-    # Construct the dashed line with the word in the middle
-    # dashed_line = '-' * left_dash_count + string + '-' * right_dash_count"""
+    """Function to print a string in center."""
     return f'{string:-^100}'
 
 
