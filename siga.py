@@ -155,7 +155,7 @@ def start_chrome():
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
         service = ChromeService(ChromeDriverManager().install())
         l_driver = webdriver.Chrome(service=service, options=options)
-    except WebDriverException:
+    except Exception:
         try:
             options = webdriver.EdgeOptions()
             for o in options_args:
