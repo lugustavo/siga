@@ -251,9 +251,6 @@ def set_local(driver, p_localidade):
                                                         str(p_localidade)))
             if wait_value:
                 id_localidade = driver.find_element(By.ID, 'IdLocalidade')
-                # id_localidade = WebDriverWait(driver, 20).until(
-                #     EC.visibility_of_element_located((By.ID, 'IdLocalidade'))
-                # )
                 select = Select(id_localidade)
                 time.sleep(2)
                 select.select_by_value(str(p_localidade))
@@ -325,9 +322,6 @@ def set_category(driver, p_category):
                                                         str(p_category)))
             if wait_value:
                 id_category_select = driver.find_element(By.ID, 'IdCategoria')
-                #id_category_select = WebDriverWait(driver, 10).until(
-                #    EC.visibility_of_element_located((By.ID, 'IdCategoria'))
-                #)
                 select = Select(id_category_select)
                 time.sleep(2)
                 select.select_by_value(str(p_category))
@@ -353,9 +347,6 @@ def set_subcategory(driver, p_subcategory):
                                                         str(p_subcategory)))
             if wait_value:
                 id_subcategory_select = driver.find_element(By.ID, 'IdSubcategoria')
-                # id_subcategory_select = WebDriverWait(driver, 30).until(
-                #     EC.visibility_of_element_located((By.ID, 'IdSubcategoria'))
-                # )
                 select = Select(id_subcategory_select)
                 time.sleep(2)
                 select.select_by_value(str(p_subcategory))
@@ -374,15 +365,21 @@ def set_subcategory(driver, p_subcategory):
 def set_motive(driver, p_motive):
     """Function to set motive field."""
     try:
-        id_motive_select = WebDriverWait(driver, 30).until(
-            EC.visibility_of_element_located((By.ID, 'IdMotivo'))
-        )
-        select = Select(id_motive_select)
-        time.sleep(2)
-        select.select_by_value(str(p_motive))
-        txt = select.first_selected_option.text
-        log.info(OPT_SELECT_MSG , txt)
-        return txt
+
+        if check_elem_exists(driver, By.ID, "IdMotivo"):
+            wait_value = WebDriverWait(driver, 40).until(
+                        EC.text_to_be_present_in_element_value((By.XPATH,
+                                                        f"//select[@id='IdMotivo']\
+                                                        /option[@value={p_motive}]"),\
+                                                        str(p_motive)))
+            if wait_value:
+                id_motive_select = driver.find_element(By.ID, 'IdMotivo')
+                select = Select(id_motive_select)
+                time.sleep(2)
+                select.select_by_value(str(p_motive))
+                txt = select.first_selected_option.text
+                log.info(OPT_SELECT_MSG , txt)
+                return txt
     except NoSuchElementException as no_element:
         err_msg = NO_ELEMENT_MSG % (p_motive, type(no_element).__name__, no_element)
         log.critical(msg=err_msg)
@@ -570,7 +567,12 @@ def main() -> None:
 
     def set_schedule(config_instance) -> None:
         frequency_opt = config_instance.get_value_by_key('frequency')
-        log.info('Scheduling configured for: %s', config_instance.get_value_by_key('title'))
+        log.info('Scheduling configured for: %s. Running from: %s until %s, every %s minutes',
+                 config_instance.get_value_by_key('title'),
+                 config_instance.get_value_by_key('start_time'),
+                 config_instance.get_value_by_key('end_time'),
+                 frequency_opt
+                 )
         sd.every(frequency_opt).minutes.do(task,
                                            config_instance) \
                                             .tag('siga-tasks',
