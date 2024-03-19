@@ -217,14 +217,19 @@ def set_entity(driver, p_entity):
 def set_district(driver, p_distrito):
     """Function to set district field."""
     try:
-        id_distrito_select = WebDriverWait(driver, 20).until(
-            EC.visibility_of_element_located((By.ID, 'IdDistrito'))
-        )
-        select = Select(id_distrito_select)
-        time.sleep(2)
-        select.select_by_value(str(p_distrito))
-        log.info(OPT_SELECT_MSG , select.first_selected_option.text)
-        return select.first_selected_option.text
+        if check_elem_exists(driver, By.ID, "IdDistrito"):
+            wait_value = WebDriverWait(driver, 40).until(
+                        EC.text_to_be_present_in_element_value((By.XPATH,
+                                                        f"//select[@id='IdDistrito']\
+                                                        /option[@value={p_distrito}]"),\
+                                                        str(p_distrito)))
+            if wait_value:
+                id_distrito_select = driver.find_element(By.ID, 'IdDistrito')
+                select = Select(id_distrito_select)
+                time.sleep(2)
+                select.select_by_value(str(p_distrito))
+                log.info(OPT_SELECT_MSG , select.first_selected_option.text)
+                return select.first_selected_option.text
     except NoSuchElementException as no_element:
         err_msg = NO_ELEMENT_MSG % (p_distrito, \
                      type(no_element).__name__, no_element)
@@ -238,14 +243,22 @@ def set_district(driver, p_distrito):
 def set_local(driver, p_localidade):
     """Function to set local field."""
     try:
-        id_localidade = WebDriverWait(driver, 20).until(
-            EC.visibility_of_element_located((By.ID, 'IdLocalidade'))
-        )
-        select = Select(id_localidade)
-        time.sleep(2)
-        select.select_by_value(str(p_localidade))
-        log.info(OPT_SELECT_MSG , select.first_selected_option.text)
-        return select.first_selected_option.text
+        if check_elem_exists(driver, By.ID, "IdLocalidade"):
+            wait_value = WebDriverWait(driver, 40).until(
+                        EC.text_to_be_present_in_element_value((By.XPATH,
+                                                        f"//select[@id='IdLocalidade']\
+                                                        /option[@value={p_localidade}]"),\
+                                                        str(p_localidade)))
+            if wait_value:
+                id_localidade = driver.find_element(By.ID, 'IdLocalidade')
+                # id_localidade = WebDriverWait(driver, 20).until(
+                #     EC.visibility_of_element_located((By.ID, 'IdLocalidade'))
+                # )
+                select = Select(id_localidade)
+                time.sleep(2)
+                select.select_by_value(str(p_localidade))
+                log.info(OPT_SELECT_MSG , select.first_selected_option.text)
+                return select.first_selected_option.text
     except NoSuchElementException as no_element:
         err_msg = NO_ELEMENT_MSG % (p_localidade, \
                      type(no_element).__name__, no_element)
@@ -280,14 +293,18 @@ def set_service_desk(driver, p_local_atendimento):
 def set_step_two(driver):
     """Function to click button."""
     try:
-        next_button = WebDriverWait(driver, 30).until(
-            EC.visibility_of_element_located((By.XPATH,
-                                            "//li[@id='liProximoButton']\
-                                                //a[@class='set-date-button']"))
-        )
-        driver.get_screenshot_as_file(f'log_step{2}.png')
-        driver.execute_script("arguments[0].click();", next_button) # next_button.click()
-        log.info('Botão "Next" clicado com sucesso!')
+        if check_elem_exists(driver, By.CLASS_NAME, "set-date-button"):
+            next_button = WebDriverWait(driver, 30).until(
+                EC.visibility_of_element_located((By.XPATH,
+                                                "//li[@id='liProximoButton']\
+                                                    //a[@class='set-date-button']"))
+            )
+            driver.get_screenshot_as_file(f'log_step{2}.png')
+            time.sleep(2)
+            driver.execute_script("arguments[0].click();", next_button) # next_button.click()
+            log.info('Botão "Next" clicado com sucesso!')
+        else:
+            log.critical('Cannot find step-two button')
     except ElementClickInterceptedException as no_button:
         err_msg = NO_BUTTON_MSG % (next_button)
         log.critical(msg=err_msg)
@@ -300,14 +317,22 @@ def set_step_two(driver):
 def set_category(driver, p_category):
     """Function to set category field."""
     try:
-        id_category_select = WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located((By.ID, 'IdCategoria'))
-        )
-        select = Select(id_category_select)
-        time.sleep(2)
-        select.select_by_value(str(p_category))
-        log.info(OPT_SELECT_MSG , select.first_selected_option.text)
-        return select.first_selected_option.text
+        if check_elem_exists(driver, By.ID, "IdCategoria"):
+            wait_value = WebDriverWait(driver, 40).until(
+                        EC.text_to_be_present_in_element_value((By.XPATH,
+                                                        f"//select[@id='IdCategoria']\
+                                                        /option[@value={p_category}]"),\
+                                                        str(p_category)))
+            if wait_value:
+                id_category_select = driver.find_element(By.ID, 'IdCategoria')
+                #id_category_select = WebDriverWait(driver, 10).until(
+                #    EC.visibility_of_element_located((By.ID, 'IdCategoria'))
+                #)
+                select = Select(id_category_select)
+                time.sleep(2)
+                select.select_by_value(str(p_category))
+                log.info(OPT_SELECT_MSG , select.first_selected_option.text)
+                return select.first_selected_option.text
     except NoSuchElementException as no_element:
         err_msg = NO_ELEMENT_MSG % (p_category, type(no_element).__name__, no_element)
         log.critical(msg=err_msg)
@@ -320,15 +345,23 @@ def set_category(driver, p_category):
 def set_subcategory(driver, p_subcategory):
     """Function to set subcategory field."""
     try:
-        id_subcategory_select = WebDriverWait(driver, 30).until(
-            EC.visibility_of_element_located((By.ID, 'IdSubcategoria'))
-        )
-        select = Select(id_subcategory_select)
-        time.sleep(2)
-        select.select_by_value(str(p_subcategory))
-        txt = select.first_selected_option.text
-        log.info(OPT_SELECT_MSG , txt)
-        return txt
+        if check_elem_exists(driver, By.ID, "IdSubcategoria"):
+            wait_value = WebDriverWait(driver, 40).until(
+                        EC.text_to_be_present_in_element_value((By.XPATH,
+                                                        f"//select[@id='IdSubcategoria']\
+                                                        /option[@value={p_subcategory}]"),\
+                                                        str(p_subcategory)))
+            if wait_value:
+                id_subcategory_select = driver.find_element(By.ID, 'IdSubcategoria')
+                # id_subcategory_select = WebDriverWait(driver, 30).until(
+                #     EC.visibility_of_element_located((By.ID, 'IdSubcategoria'))
+                # )
+                select = Select(id_subcategory_select)
+                time.sleep(2)
+                select.select_by_value(str(p_subcategory))
+                txt = select.first_selected_option.text
+                log.info(OPT_SELECT_MSG , txt)
+                return txt
     except NoSuchElementException as no_element:
         err_msg = NO_ELEMENT_MSG % (p_subcategory, type(no_element).__name__, no_element)
         log.critical(msg=err_msg)
@@ -369,6 +402,7 @@ def set_step_three(driver):
                                                     //a[@class='set-date-button']"))
             )
             driver.get_screenshot_as_file(f'log_step{3}.png')
+            time.sleep(2)
             driver.execute_script("arguments[0].click();", next_button) # next_button.click()
             log.info('Botão "Next" clicado com sucesso!')
         else:
