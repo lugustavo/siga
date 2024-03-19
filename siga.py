@@ -447,6 +447,7 @@ def word_in_center(string):
 
 def get_time_slots(driver, days_max):
     """Function to get all the schedule available."""
+    pattern = r'\d{2}-\d{2}-\d{4} \d{2}:\d{2}\b|\d{2}:\d{2} - \d{2}-\d{2}-\d{4}\b'
 
     date_max_days = (datetime.now() + timedelta(days=days_max))
     log.info('Max date to search for time slots: %s', date_max_days.strftime("%d-%m-%Y"))
@@ -458,11 +459,12 @@ def get_time_slots(driver, days_max):
         for time_slots in schedule_list:
             if time_slots:
                 available_dates = re.search('(\\d{2}-\\d{2}-\\d{4})',
-                                            time_slots.find_element(By.TAG_NAME, "span").text[0:18])
+                                            time_slots.find_element(By.TAG_NAME, "span").text)
                 date_now = datetime.strptime(available_dates.group(),'%d-%m-%Y')
                 if date_now <= date_max_days: #filters de time slots by maximum date wanted
-                    TIME_SLOT_LIST[time_slots.get_attribute("title")].append( \
-                        time_slots.find_element(By.TAG_NAME, "span").text[0:18])
+                    validated_date = re.search(pattern,
+                                               time_slots.find_element(By.TAG_NAME, "span").text)
+                    TIME_SLOT_LIST[time_slots.get_attribute("title")].append(validated_date.group())
 
     if TIME_SLOT_LIST:
         log.info('|'*100)
