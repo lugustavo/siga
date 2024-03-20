@@ -165,6 +165,9 @@ def start_chrome():
         except (ConnectionError,NoSuchDriverException):
             log.info('Could not initiate WebDriver. Please check!')
             raise
+        except Exception as e:
+            log_exception(e)
+            raise
 
     # Navigate to the URL
     url = 'https://siga.marcacaodeatendimento.pt/Marcacao/Entidades'
@@ -541,14 +544,13 @@ def check_schedule(driver, config_instance) -> NotificationData:
         log_exception(wd)
     except Exception as ex:
         log.error('Exception in check_schedule: %s', ex)
-        raise
 
 
 def task(config_instance) -> None:
     """Function to start the tasks."""
     now = datetime.now()
     log.info('>' * 100)
-    log.info(word_in_center(' Task Start '))
+    log.info(word_in_center(' Task Start: %s ' % config_instance.get_value_by_key('title')))
     start_time = config_instance.get_value_by_key('start_time')
     end_time = config_instance.get_value_by_key('end_time')
     if start_time <= now.strftime("%H:%M") <= end_time:
@@ -558,7 +560,7 @@ def task(config_instance) -> None:
         send_message(msg)
     else:
         log.info('Outside business hours')
-    log.info(word_in_center(' Task End '))
+    log.info(word_in_center(' Task End: %s ' % config_instance.get_value_by_key('title')))
     log.info('<'*100)
 
 
