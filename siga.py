@@ -58,7 +58,7 @@ ENV_VARS = EnvironmentVariables()
 TIME_SLOT_LIST = collections.defaultdict(list)
 opt = {}
 
-OPT_SELECT_MSG = 'Op„o "%s" selecionada com sucesso!'
+OPT_SELECT_MSG = 'Op√ß√£o "%s" selecionada com sucesso!'
 NO_ELEMENT_MSG = "No element found for: %s\\n%s was raised: %s"
 LOG_WEBDRIVER_ERROR = 'log_%s_error_%s.png'
 NO_BUTTON_MSG = "No button %s available at the moment"
@@ -235,7 +235,7 @@ def find_and_click_entity_button(driver, p_entity):
                     try:
                         btn_label = btn.get_attribute("title")
                         btn.click()
-                        log.info('Bot„o "%s" clicado com sucesso!', btn_label)
+                        log.info('Bot√£o "%s" clicado com sucesso!', btn_label)
                         return btn_label
                     except WebDriverException as webd_except:
                         log.critical(webd_except)
@@ -343,7 +343,7 @@ def set_step_two(driver):
             driver.get_screenshot_as_file(f'log_step{2}.png')
             time.sleep(2)
             driver.execute_script("arguments[0].click();", next_button) # next_button.click()
-            log.info('Bot„o "Next" clicado com sucesso!')
+            log.info('Bot√£o "Next" clicado com sucesso!')
         else:
             log.critical('Cannot find step-two button')
     except ElementClickInterceptedException as no_button:
@@ -445,7 +445,7 @@ def set_step_three(driver):
             driver.get_screenshot_as_file(f'log_step{3}.png')
             time.sleep(2)
             driver.execute_script("arguments[0].click();", next_button) # next_button.click()
-            log.info('Bot„o "Next" clicado com sucesso!')
+            log.info('Bot√£o "Next" clicado com sucesso!')
         else:
             log.critical('Cannot find step-three button')
     except ElementClickInterceptedException as no_button:
@@ -525,11 +525,7 @@ def get_time_slots(driver, days_max):
                     validated_date = re.search(pattern,
                                                 time_slots.find_element(By.TAG_NAME, "span").text)
                     TIME_SLOT_LIST[time_slots.get_attribute("title")].append(validated_date.group())
-        if len(TIME_SLOT_LIST) == 0:
-            log.info('*'*100)
-            log.info(word_in_center(' Dates are available, but none are within your parameter search. '))
-            log.info('*'*100)
-        TIME_SLOT_LIST = sort_nested_dict_by_date(TIME_SLOT_LIST)
+
         print_log_schedule(TIME_SLOT_LIST)
 
     try:
