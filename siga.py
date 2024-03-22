@@ -1,14 +1,16 @@
 """Imports"""
 import os
-import sys
+import gzip
 import traceback
 import re
 import time
 import collections
 from datetime import datetime, timedelta
 
-import logging as log
+import logging as logger
+from logging.handlers import TimedRotatingFileHandler
 import requests
+
 
 import schedule as sd
 from notifypy import Notify
@@ -36,6 +38,19 @@ from notif_data import NotificationData
 
 __version__ = "0.01.01"
 
+
+class GZipRotator:
+    """Class to be used by logging to compress old log files."""
+    def __call__(self, source, dest):
+        os.rename(source, dest)
+        f_in = open(dest, 'rb')
+        f_out = gzip.open("%s.gz" % dest, 'wb')
+        f_out.writelines(f_in)
+        f_out.close()
+        f_in.close()
+        os.remove(dest)
+
+
 # Create an instance of the EnvironmentVariables class
 # which loads environment variables from .env file
 ENV_VARS = EnvironmentVariables()
@@ -43,31 +58,50 @@ ENV_VARS = EnvironmentVariables()
 TIME_SLOT_LIST = collections.defaultdict(list)
 opt = {}
 
-OPT_SELECT_MSG = 'Op√ß√£o "%s" selecionada com sucesso!'
+OPT_SELECT_MSG = 'Op„o "%s" selecionada com sucesso!'
 NO_ELEMENT_MSG = "No element found for: %s\\n%s was raised: %s"
 LOG_WEBDRIVER_ERROR = 'log_%s_error_%s.png'
 NO_BUTTON_MSG = "No button %s available at the moment"
 
+"""
+#logger.basicConfig(
+#    #handlers=[
+#    #    logger.StreamHandler(sys.stdout),
+#    #    logger.FileHandler(f'{os.path.splitext(os.path.basename(__file__))[0]}_' +
+#    #                    f'{datetime.now().strftime("%Y%m%d")}.log',
+#    #                    mode="a+", encoding='utf-8'),
+#    #],
+#    level=logger.DEBUG,
+#    format="%(asctime)s - %(name)-12s - %(levelname)-8s:[%(filename)s:%(lineno)-04d]: %(message)s",
+#    datefmt="%Y-%m-%d %H:%M:%S",
+#)
+"""
 
-log.basicConfig(
-    handlers=[
-        log.StreamHandler(sys.stdout),
-        log.FileHandler(f'{os.path.splitext(os.path.basename(__file__))[0]}_' +
-                        f'{datetime.now().strftime("%Y%m%d")}.log',
-                        mode="a+", encoding='utf-8'),
-    ],
-    level=log.DEBUG,
-    format="%(asctime)s - %(name)-12s - %(levelname)-8s:[%(filename)s:%(lineno)-04d]: %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-)
+log = logger.getLogger("")
+log.setLevel(logger.DEBUG)
+logFormatter = logger.Formatter(fmt="%(asctime)s - %(name)-12s - %(levelname)-8s:[%(filename)s:%(lineno)-04d]: %(message)s",
+                                datefmt="%Y-%m-%d %H:%M:%S")
+consoleHandler = logger.StreamHandler()
+consoleHandler.setFormatter(logFormatter)
 
-log.getLogger("selennium").setLevel(log.ERROR)
-log.getLogger('selenium.webdriver.remote').setLevel(log.ERROR)
-log.getLogger('selenium.webdriver.common').setLevel(log.ERROR)
-log.getLogger('urllib3.connectionpool').setLevel(log.ERROR)
-log.getLogger('WDM').setLevel(log.ERROR)
-log.getLogger('charset_normalizer').setLevel(log.ERROR)
-log.getLogger('schedule').setLevel(log.DEBUG)
+FileHandler = TimedRotatingFileHandler(f'{os.path.splitext(os.path.basename(__file__))[0]}.log',
+                                       when='d', interval=1, backupCount=10)
+FileHandler.suffix = '%d%m%Y'
+FileHandler.namer = lambda name: name.replace(".log", "") + ".log"
+FileHandler.rotator = GZipRotator()
+
+FileHandler.setFormatter(logFormatter)
+log.addHandler(FileHandler)
+log.addHandler(consoleHandler)
+
+
+logger.getLogger("selennium").setLevel(logger.ERROR)
+logger.getLogger('selenium.webdriver.remote').setLevel(logger.ERROR)
+logger.getLogger('selenium.webdriver.common').setLevel(logger.ERROR)
+logger.getLogger('urllib3.connectionpool').setLevel(logger.ERROR)
+logger.getLogger('WDM').setLevel(logger.ERROR)
+logger.getLogger('charset_normalizer').setLevel(logger.ERROR)
+logger.getLogger('schedule').setLevel(logger.DEBUG)
 
 
 def check_dotenv_siga():
@@ -89,7 +123,7 @@ def send_message(message_header):
     """Function to send message."""
     if TIME_SLOT_LIST:
         if ENV_VARS.bot_token and ENV_VARS.bot_chat_id:
-            response = telegram_bot_sendtext(message_header, TIME_SLOT_LIST)
+            response = telegram_send_message(message_header, TIME_SLOT_LIST)
             log.info('Message sent to Telegram')
             log.info('Telegram response: %s' , list(response.keys())[0])
 
@@ -201,7 +235,7 @@ def find_and_click_entity_button(driver, p_entity):
                     try:
                         btn_label = btn.get_attribute("title")
                         btn.click()
-                        log.info('Bot√£o "%s" clicado com sucesso!', btn_label)
+                        log.info('Bot„o "%s" clicado com sucesso!', btn_label)
                         return btn_label
                     except WebDriverException as webd_except:
                         log.critical(webd_except)
@@ -309,7 +343,7 @@ def set_step_two(driver):
             driver.get_screenshot_as_file(f'log_step{2}.png')
             time.sleep(2)
             driver.execute_script("arguments[0].click();", next_button) # next_button.click()
-            log.info('Bot√£o "Next" clicado com sucesso!')
+            log.info('Bot„o "Next" clicado com sucesso!')
         else:
             log.critical('Cannot find step-two button')
     except ElementClickInterceptedException as no_button:
@@ -411,7 +445,7 @@ def set_step_three(driver):
             driver.get_screenshot_as_file(f'log_step{3}.png')
             time.sleep(2)
             driver.execute_script("arguments[0].click();", next_button) # next_button.click()
-            log.info('Bot√£o "Next" clicado com sucesso!')
+            log.info('Bot„o "Next" clicado com sucesso!')
         else:
             log.critical('Cannot find step-three button')
     except ElementClickInterceptedException as no_button:
@@ -454,6 +488,18 @@ def word_in_center(string):
 
 def get_time_slots(driver, days_max):
     """Function to get all the schedule available."""
+
+    def print_log_schedule(time_slot):
+        if time_slot:
+            log.info('|'*100)
+            log.info(word_in_center('Run! There are time slots available that matches your search'))
+            for key, values in time_slot.items():
+                log.info('Location: %s', key)
+                log.info('Dates: %s', values)
+                log.info('-'*100)
+            log.info('|'*100)
+
+
     pattern = r'\d{2}-\d{2}-\d{4} \d{2}:\d{2}\b|\d{2}:\d{2} - \d{2}-\d{2}-\d{4}\b'
 
     date_max_days = (datetime.now() + timedelta(days=days_max))
