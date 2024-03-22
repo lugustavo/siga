@@ -52,24 +52,24 @@ class YamlLoader:
         self.__instances = [self.__create_instance(i, item) \
                             for i, item in enumerate(self.config_data, start=1)]
 
-        valids = self.get_len_loaded_configs()
-        configs = self.get_len_valid_configs()
+        valids = self.get_len_valid_configs()
+        configs = self.get_len_loaded_configs()
         logger.info("A total of %s out of %s configurations were successfully imported.",
                     valids, configs)
-
-    def get_len_loaded_configs(self):
-        """
-        Gets the total number of loaded configurations from YAML file.
-        Returns:
-            int: A number indication how many configurations are there inside the file.
-        """
-        return len(list(filter(None, self.__instances)))
 
     def get_len_valid_configs(self):
         """
         Gets the number of validated configurations from YAML file.
         Returns:
             int: A number indication how many configurations are valid inside the file.
+        """
+        return len(list(filter(None, self.__instances)))
+
+    def get_len_loaded_configs(self):
+        """
+        Gets the total number of loaded configurations from YAML file.
+        Returns:
+            int: A number indication how many configurations are there inside the file.
         """
         return len(self.__instances)
 

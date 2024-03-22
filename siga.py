@@ -103,6 +103,16 @@ def send_message(message_header):
         TIME_SLOT_LIST.clear()
 
 
+def format_time_slots(time_slots):
+    """Function that receives a dictionary object and return each item concatenated with EOL"""
+    message = ''
+    for key, value_list in time_slots.items():
+        if key not in ['entity', 'category', 'subcategory', 'motive', 'district', 'local']:
+            message += f">>> {key}\n"
+            message += '\n'.join(value_list) + '\n'
+    return message
+
+
 def telegram_bot_sendtext(message_header, time_slots):
     """Function to send a notification to Telegram via chat bot."""
     entity = message_header.get_entity()
@@ -115,10 +125,7 @@ def telegram_bot_sendtext(message_header, time_slots):
     message = f"{entity} - {category}\n{subcategory}\n{motive}\n"
     message += f"Distrito: {district}, Localidade: {local}\n\n"
 
-    for key, value_list in time_slots.items():
-        if key not in ['entity', 'category', 'subcategory', 'motive', 'district', 'local']:
-            message += f"{key}\n"
-            message += '\n'.join(value_list) + '\n'
+    message += format_time_slots(time_slots)
 
     send_text = 'https://api.telegram.org/bot' + ENV_VARS.bot_token + '/sendMessage?chat_id=' \
                 + ENV_VARS.bot_chat_id + '&parse_mode=Markdown&text=' + message
@@ -461,15 +468,19 @@ def get_time_slots(driver, days_max):
                 available_dates = re.search('(\\d{2}-\\d{2}-\\d{4})',
                                             time_slots.find_element(By.TAG_NAME, "span").text)
                 date_now = datetime.strptime(available_dates.group(),'%d-%m-%Y')
-                if date_now <= date_max_days: #filters de time slots by maximum date wanted
+                if date_now <= date_max_days: # filters de time slots by maximum date wanted
                     validated_date = re.search(pattern,
-                                               time_slots.find_element(By.TAG_NAME, "span").text)
+                                                time_slots.find_element(By.TAG_NAME, "span").text)
                     TIME_SLOT_LIST[time_slots.get_attribute("title")].append(validated_date.group())
 
-    if TIME_SLOT_LIST:
-        log.info('|'*100)
-        log.info('Slots found: %s' , TIME_SLOT_LIST)
-        log.info('|'*100)
+        if TIME_SLOT_LIST:
+            log.info('|'*100)
+            log.info(word_in_center('Run! There are time slots available that matches your search'))
+            for key, values in TIME_SLOT_LIST.items():
+                log.info('Location: %s', key)
+                log.info('Dates: %s', values)
+                log.info('-'*100)
+            log.info('|'*100)
 
     try:
         if check_elem_exists(driver, By.CLASS_NAME, "error-message"):
@@ -542,8 +553,10 @@ def check_schedule(driver, config_instance) -> NotificationData:
     except WebDriverException as wd:
         log.error('WebDriverException in check_schedule: %s', wd)
         log_exception(wd)
+        return None
     except Exception as ex:
         log.error('Exception in check_schedule: %s', ex)
+        return None
 
 
 def task(config_instance) -> None:
@@ -585,6 +598,9 @@ def main() -> None:
     for config in yaml_instance.get_instances():
         set_schedule(config)
 
+    if yaml_instance.get_len_valid_configs() == 0:
+        raise ValueError('There are no valid configurations on your Yaml file. Please check!')
+
     while True:
         sd.run_pending()
         time.sleep(1)
@@ -607,6 +623,9 @@ if __name__ == "__main__":
     try:
         log.info("Press CTRL + C to cancel.")
         main()
+    except ValueError as v:
+        log.info(v)
+        log.info(word_in_center(' End '))
     except FileNotFoundError as e:
         log_exception(e)
         os._exit(1)
