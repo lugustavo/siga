@@ -1,0 +1,65 @@
+{
+  "type": "object",
+  "properties": {
+    "version": { "type": "integer" },
+    "disable_existing_loggers": { "type": "boolean" },
+    "formatters": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z]+$": {
+          "type": "object",
+          "properties": {
+            "format": { "type": "string" },
+            "datefmt": { "type": "string", "format": "date", "format_argument": "%Y-%m-%d" }
+          },
+          "required": ["format", "datefmt"]
+        }
+      }
+    },
+    "handlers": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z]+$": {
+          "type": "object",
+          "properties": {
+            "class": { "type": "string" },
+            "level": { "type": "string" },
+            "formatter": { "type": "string" },
+            "stream": { "type": "string" },
+            "filename": { "type": "string" },
+            "mode": { "type": "string" }
+          },
+          "required": ["class", "level", "formatter"]
+        }
+      }
+    },
+    "loggers": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z]+$": {
+          "type": "object",
+          "properties": {
+            "level": { "type": "string" },
+            "handlers": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "propagate": { "type": "boolean" }
+          },
+          "required": ["level", "handlers", "propagate"]
+        }
+      }
+    },
+    "root": {
+      "type": "object",
+      "properties": {
+        "level": { "type": "string" },
+        "handlers": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["level", "handlers"]
+    }
+  }
+}
