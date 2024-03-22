@@ -491,13 +491,20 @@ def get_time_slots(driver, days_max):
 
     def print_log_schedule(time_slot):
         if time_slot:
+            sorted_list = dict(sorted(time_slot.items()))
             log.info('|'*100)
             log.info(word_in_center('Run! There are time slots available that matches your search'))
-            for key, values in time_slot.items():
+            for key, values in sorted_list.items():
                 log.info('Location: %s', key)
-                log.info('Dates: %s', values)
+                log.info('Dates: %s', sorted(values))
                 log.info('-'*100)
             log.info('|'*100)
+
+
+    def sort_nested_dict_by_date(nested_dict):
+        for key, value in nested_dict.items():
+            nested_dict[key] = sorted(value, key=lambda x: datetime.strptime(x, '%d-%m-%Y %H:%M'))
+        return {key: value for key, value in sorted(nested_dict.items())}
 
 
     pattern = r'\d{2}-\d{2}-\d{4} \d{2}:\d{2}\b|\d{2}:\d{2} - \d{2}-\d{2}-\d{4}\b'
@@ -518,15 +525,12 @@ def get_time_slots(driver, days_max):
                     validated_date = re.search(pattern,
                                                 time_slots.find_element(By.TAG_NAME, "span").text)
                     TIME_SLOT_LIST[time_slots.get_attribute("title")].append(validated_date.group())
-
-        if TIME_SLOT_LIST:
-            log.info('|'*100)
-            log.info(word_in_center('Run! There are time slots available that matches your search'))
-            for key, values in TIME_SLOT_LIST.items():
-                log.info('Location: %s', key)
-                log.info('Dates: %s', values)
-                log.info('-'*100)
-            log.info('|'*100)
+        if len(TIME_SLOT_LIST) == 0:
+            log.info('*'*100)
+            log.info(word_in_center(' Dates are available, but none are within your parameter search. '))
+            log.info('*'*100)
+        TIME_SLOT_LIST = sort_nested_dict_by_date(TIME_SLOT_LIST)
+        print_log_schedule(TIME_SLOT_LIST)
 
     try:
         if check_elem_exists(driver, By.CLASS_NAME, "error-message"):
@@ -538,7 +542,7 @@ def get_time_slots(driver, days_max):
 
             h5_element = error_message_div.find_element(By.TAG_NAME, 'h5')
             log.info('*'*100)
-            log.info(h5_element.text)
+            log.info(word_in_center(h5_element.text))
             log.info('*'*100)
 
     except NoSuchElementException as no_element:
@@ -677,6 +681,7 @@ if __name__ == "__main__":
         os._exit(1)
     except (KeyboardInterrupt, EOFError):
         log.info(word_in_center(' Interrupted by user '))
+        os._exit(1)
     except SystemExit as e:
         log.error(word_in_center(' Interrupted by system '))
         log_exception(e)
