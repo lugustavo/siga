@@ -147,7 +147,7 @@ def format_time_slots(time_slots):
     return message
 
 
-def telegram_bot_sendtext(message_header, time_slots):
+def telegram_send_message(message_header, time_slots):
     """Function to send a notification to Telegram via chat bot."""
     entity = message_header.get_entity()
     category = message_header.get_category()
