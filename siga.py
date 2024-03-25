@@ -128,10 +128,13 @@ def telegram_send_message(message_header, time_slots):
 
     message += format_time_slots(time_slots)
 
-    send_text = f'https://api.telegram.org/bot{ENV_VARS.bot_token}/sendMessage?chat_id= \
-                {ENV_VARS.bot_chat_id} &parse_mode=Markdown&text={message}'
-
-    response = requests.get(send_text, timeout=10)
+    url = f'https://api.telegram.org/bot{ENV_VARS.bot_token}/sendMessage'
+    params = {
+        "chat_id": ENV_VARS.bot_chat_id,
+        "text": message,
+        "parse_mode" : "Markdown"
+    }
+    response = requests.get(url, params=params, timeout=10)
     return response.json()
 
 
@@ -517,7 +520,7 @@ def get_time_slots(driver, days_max):
         log.critical("%s was raised: %s" , type(timeout).__name__, timeout)
 
 
-def check_schedule(driver, config_instance) -> NotificationData | None:
+def check_schedule(driver, config_instance) -> NotificationData:
     """Function to manage the automation search."""
     msg_header = NotificationData()
 
