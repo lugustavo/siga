@@ -8,7 +8,6 @@ import collections
 from datetime import datetime, timedelta
 
 import logging as log
-from logging.handlers import TimedRotatingFileHandler
 import requests
 
 
@@ -18,7 +17,7 @@ from notifypy import Notify
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import (NoSuchElementException,
                                         TimeoutException,
@@ -101,7 +100,6 @@ def send_message(message_header):
         notification.message = f"Time slots available:\n{message_header.get_district()}\
             -{message_header.get_local()}"
         notification.urgency = "critical"
-        notification.timeout = 10000  # 5 seconds
         notification.send()
         TIME_SLOT_LIST.clear()
 
@@ -130,8 +128,8 @@ def telegram_send_message(message_header, time_slots):
 
     message += format_time_slots(time_slots)
 
-    send_text = 'https://api.telegram.org/bot' + ENV_VARS.bot_token + '/sendMessage?chat_id=' \
-                + ENV_VARS.bot_chat_id + '&parse_mode=Markdown&text=' + message
+    send_text = f'https://api.telegram.org/bot{ENV_VARS.bot_token}/sendMessage?chat_id= \
+                {ENV_VARS.bot_chat_id} &parse_mode=Markdown&text={message}'
 
     response = requests.get(send_text, timeout=10)
     return response.json()
@@ -495,7 +493,7 @@ def get_time_slots(driver, days_max):
                                                 time_slots.find_element(By.TAG_NAME, "span").text)
                     TIME_SLOT_LIST[time_slots.get_attribute("title")].append(validated_date.group())
 
-        TIME_SLOT_LIST = sort_nested_dict_by_date
+        # TIME_SLOT_LIST = sort_nested_dict_by_date(TIME_SLOT_LIST)
         print_log_schedule(TIME_SLOT_LIST)
 
     try:
@@ -519,7 +517,7 @@ def get_time_slots(driver, days_max):
         log.critical("%s was raised: %s" , type(timeout).__name__, timeout)
 
 
-def check_schedule(driver, config_instance) -> NotificationData:
+def check_schedule(driver, config_instance) -> NotificationData | None:
     """Function to manage the automation search."""
     msg_header = NotificationData()
 
