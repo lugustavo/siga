@@ -1,13 +1,13 @@
 """Imports"""
 import os
-import gzip
+import sys
 import traceback
 import re
 import time
 import collections
 from datetime import datetime, timedelta
 
-import logging as logger
+import logging as log
 from logging.handlers import TimedRotatingFileHandler
 import requests
 
@@ -39,18 +39,6 @@ from notif_data import NotificationData
 __version__ = "0.01.01"
 
 
-class GZipRotator:
-    """Class to be used by logging to compress old log files."""
-    def __call__(self, source, dest):
-        os.rename(source, dest)
-        f_in = open(dest, 'rb')
-        f_out = gzip.open("%s.gz" % dest, 'wb')
-        f_out.writelines(f_in)
-        f_out.close()
-        f_in.close()
-        os.remove(dest)
-
-
 # Create an instance of the EnvironmentVariables class
 # which loads environment variables from .env file
 ENV_VARS = EnvironmentVariables()
@@ -63,45 +51,26 @@ NO_ELEMENT_MSG = "No element found for: %s\\n%s was raised: %s"
 LOG_WEBDRIVER_ERROR = 'log_%s_error_%s.png'
 NO_BUTTON_MSG = "No button %s available at the moment"
 
-"""
-#logger.basicConfig(
-#    #handlers=[
-#    #    logger.StreamHandler(sys.stdout),
-#    #    logger.FileHandler(f'{os.path.splitext(os.path.basename(__file__))[0]}_' +
-#    #                    f'{datetime.now().strftime("%Y%m%d")}.log',
-#    #                    mode="a+", encoding='utf-8'),
-#    #],
-#    level=logger.DEBUG,
-#    format="%(asctime)s - %(name)-12s - %(levelname)-8s:[%(filename)s:%(lineno)-04d]: %(message)s",
-#    datefmt="%Y-%m-%d %H:%M:%S",
-#)
-"""
 
-log = logger.getLogger("")
-log.setLevel(logger.DEBUG)
-logFormatter = logger.Formatter(fmt="%(asctime)s - %(name)-12s - %(levelname)-8s:[%(filename)s:%(lineno)-04d]: %(message)s",
-                                datefmt="%Y-%m-%d %H:%M:%S")
-consoleHandler = logger.StreamHandler()
-consoleHandler.setFormatter(logFormatter)
+log.basicConfig(
+    handlers=[
+        log.StreamHandler(sys.stdout),
+        log.FileHandler(f'{os.path.splitext(os.path.basename(__file__))[0]}_' +
+                        f'{datetime.now().strftime("%Y%m%d")}.log',
+                        mode="a+", encoding='utf-8'),
+    ],
+    level=log.DEBUG,
+    format="%(asctime)s - %(name)-12s - %(levelname)-8s:[%(filename)s:%(lineno)-04d]: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 
-FileHandler = TimedRotatingFileHandler(f'{os.path.splitext(os.path.basename(__file__))[0]}.log',
-                                       when='d', interval=1, backupCount=10)
-FileHandler.suffix = '%d%m%Y'
-FileHandler.namer = lambda name: name.replace(".log", "") + ".log"
-FileHandler.rotator = GZipRotator()
-
-FileHandler.setFormatter(logFormatter)
-log.addHandler(FileHandler)
-log.addHandler(consoleHandler)
-
-
-logger.getLogger("selennium").setLevel(logger.ERROR)
-logger.getLogger('selenium.webdriver.remote').setLevel(logger.ERROR)
-logger.getLogger('selenium.webdriver.common').setLevel(logger.ERROR)
-logger.getLogger('urllib3.connectionpool').setLevel(logger.ERROR)
-logger.getLogger('WDM').setLevel(logger.ERROR)
-logger.getLogger('charset_normalizer').setLevel(logger.ERROR)
-logger.getLogger('schedule').setLevel(logger.DEBUG)
+log.getLogger("selennium").setLevel(log.ERROR)
+log.getLogger('selenium.webdriver.remote').setLevel(log.ERROR)
+log.getLogger('selenium.webdriver.common').setLevel(log.ERROR)
+log.getLogger('urllib3.connectionpool').setLevel(log.ERROR)
+log.getLogger('WDM').setLevel(log.ERROR)
+log.getLogger('charset_normalizer').setLevel(log.ERROR)
+log.getLogger('schedule').setLevel(log.DEBUG)
 
 
 def check_dotenv_siga():
@@ -526,6 +495,7 @@ def get_time_slots(driver, days_max):
                                                 time_slots.find_element(By.TAG_NAME, "span").text)
                     TIME_SLOT_LIST[time_slots.get_attribute("title")].append(validated_date.group())
 
+        TIME_SLOT_LIST = sort_nested_dict_by_date
         print_log_schedule(TIME_SLOT_LIST)
 
     try:
