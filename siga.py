@@ -140,8 +140,8 @@ def telegram_send_message(message_header, time_slots):
 
 def start_chrome():
     """Function to start chrome browser."""
-    test_ua = 'Mozilla/5.0 (Windows NT 4.0; WOW64) AppleWebKit/537.36 \
-    (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
+    test_ua = 'Mozilla/5.0 (Windows NT 4.0; WOW64) AppleWebKit/537.36 '
+    test_ua += '(KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
 
     # Command line arguments for Chrome
     options_args = [
