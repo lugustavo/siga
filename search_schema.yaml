@@ -52,6 +52,13 @@
                             'motivo' : {
                             'required' : True,
                             'type' : 'number'
+                            },
+                            'qtd_casos' : {
+                            'required' : False,
+                            'type' : 'number',
+                            'default' : 1,
+                            'min' : 1,
+                            'max' : 5
                             }
                         }
             },

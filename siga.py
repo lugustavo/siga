@@ -145,7 +145,7 @@ def start_chrome():
 
     # Command line arguments for Chrome
     options_args = [
-        # '--start-maximized'
+        #'--start-maximized'
         '--headless',
         '--window-size=1920,1080',
         '--disable-gpu',
@@ -304,16 +304,24 @@ def set_service_desk(driver, p_local_atendimento):
 def set_step_two(driver):
     """Function to click button."""
     try:
-        if check_elem_exists(driver, By.CLASS_NAME, "set-date-button"):
+        if check_elem_exists(driver, By.CLASS_NAME, "btn-primario"):
             next_button = WebDriverWait(driver, 30).until(
                 EC.visibility_of_element_located((By.XPATH,
-                                                "//li[@id='liProximoButton']\
-                                                    //a[@class='set-date-button']"))
+                                                "//button[@id='btnOpcoesAtendimento']"))
             )
             driver.get_screenshot_as_file(f'log_step{2}.png')
             time.sleep(2)
             driver.execute_script("arguments[0].click();", next_button) # next_button.click()
-            log.info('Botão "Next" clicado com sucesso!')
+            log.info('Botão "Ver opções de atendimento" clicado com sucesso!')
+
+            next_button = WebDriverWait(driver, 30).until(
+                EC.visibility_of_element_located((By.XPATH,
+                                                "//button[@type='button' and contains(@class, 'btn-primario') and @onclick='presencialSelecionarLocalAtendimento()']"))
+            )
+            driver.get_screenshot_as_file(f'log_step{2}.png')
+            time.sleep(2)
+            driver.execute_script("arguments[0].click();", next_button) # next_button.click()
+            log.info('Botão "Selecionar local de atendimento" clicado com sucesso!')
         else:
             log.critical('Cannot find step-two button')
     except ElementClickInterceptedException as no_button:

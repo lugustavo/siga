@@ -5,23 +5,31 @@ class NotificationData:
         """
         Initialize NotificationData with default values.
         Attributes:
+            _title: Title of the configuration/search
             _entity: Entity information.
             _category: Category information.
             _subcategory: Subcategory information.
             _motive: Motive information.
+            _num_cases: Number of cases to be handled.
             _district: District information.
             _local: Local information.
             _service_desk: Service desk information.
         """
+        self._title = None
         self._entity = None
         self._category = None
         self._subcategory = None
         self._motive = None
+        self._num_cases = None
         self._district = None
         self._local = None
         self._service_desk = None
 
     # Getter methods
+    def get_title(self):
+        """Get title information."""
+        return self._title
+
     def get_entity(self):
         """Get entity information."""
         return self._entity
@@ -38,6 +46,10 @@ class NotificationData:
         """Get motive information."""
         return self._motive
 
+    def get_num_cases(self):
+        """Get number of cases information."""
+        return self._num_cases
+
     def get_district(self):
         """Get district information."""
         return self._district
@@ -51,6 +63,14 @@ class NotificationData:
         return self._service_desk
 
     # Setter methods
+    def set_title(self, title):
+        """
+        Set title information.
+        Args:
+            title: Title information to set.
+        """
+        self._title = title
+
     def set_entity(self, entity):
         """
         Set entity information.
@@ -82,6 +102,14 @@ class NotificationData:
             motive: Motive information to set.
         """
         self._motive = motive
+
+    def set_num_cases(self, num_cases):
+        """
+        Set Number of cases information.
+        Args:
+            motive: Number of cases information to set.
+        """
+        self._num_cases = num_cases
 
     def set_district(self, district):
         """
