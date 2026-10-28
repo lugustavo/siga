@@ -1,50 +1,41 @@
+# Uma pesquisa por bloco. Textos (sem distinguir acentos/maiusculas) ou ids numericos.
+# auto_book: false = so avisa por Telegram; true = marca sozinho (ver DRY_RUN no .env).
+
+# Local de teste (Obidos): so avisa, nunca marca.
 - search:
-    title: 'IRN Nacionalidade Lisboa'
-    max_days: 15
+    title: 'CC Obidos (teste)'
+    auto_book: false
+    entity_opt: 'IRN Registo'
+    service_opt:
+      tema: 'Cidadão'
+      subtema: 'Cartão de Cidadão - Pedido/Renovação'
+      motivo: 'Pedido/Renovação de Cartão de Cidadão'
+      qtd_casos: 1
+    location_opt:
+      distrito: 'Leiria'
+      localidade: 'Óbidos'
+      local_atendimento: 'CRCPCom Óbidos'
+    max_days: 90
     frequency: 5
-    entity_opt: 176
-    service_opt:
-      tema: 22061
-      subtema: 22062
-      motivo: 22066
-    location_opt:
-      distrito: 11
-      localidade: -1
+
+# Alvo real: Sintra.
 - search:
-    start_time: '07:00'
+    title: 'CC Sintra'
+    auto_book: false          # passar a true quando quiseres que marque sozinho
+    urgency: MAX              # MAX = o mais cedo | MED = o do meio | MIN = o mais tarde
+    start_time: '07:00'       # horas do dia em que a pesquisa corre
     end_time: '23:59'
-    max_days: 7
-    frequency: 3
-    entity_opt: 176
+    slot_start: '00:00'       # janela horaria aceite para o atendimento
+    slot_end: '23:59'
+    max_days: 60
+    frequency: 3              # minutos entre verificacoes (2 a 120)
+    entity_opt: 'IRN Registo'
     service_opt:
-      tema: 22002
-      subtema: 22003
-      motivo: 22705
+      tema: 'Cidadão'
+      subtema: 'Cartão de Cidadão - Pedido/Renovação'
+      motivo: 'Pedido/Renovação de Cartão de Cidadão'
+      qtd_casos: 1
     location_opt:
-      distrito: 11
-      localidade: 17
-      local_atendimento: 591
-- search:
-    max_days: 7
-    frequency: 3
-    entity_opt: 176
-    service_opt:
-      tema: 22002
-      subtema: 22003
-      motivo: 22705
-    location_opt:
-      distrito: 11
-      localidade: 6
-      local_atendimento: 889
-- search:
-    max_days: 7
-    frequency: 3
-    entity_opt: 176
-    service_opt:
-      tema: 22002
-      subtema: 22003
-      motivo: 22705
-    location_opt:
-      distrito: 11
-      localidade: 10
-      local_atendimento: 554
+      distrito: 'Lisboa'
+      localidade: 'Sintra'
+      local_atendimento: 'CRC Sintra'

@@ -1,0 +1,17 @@
+services:
+  siga:
+    build: .
+    container_name: siga
+    restart: unless-stopped
+    shm_size: "1gb"
+    env_file:
+      - path: .env
+        required: false
+    ports:
+      # noVNC controla um browser com os teus dados: nunca o exponhas a internet.
+      # Por omissao so a propria maquina; para a LAN/Tailscale define NOVNC_BIND=<ip>.
+      - "${NOVNC_BIND:-127.0.0.1}:6080:6080"
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config:ro
+      - ./search_config.yaml:/app/search_config.yaml:ro

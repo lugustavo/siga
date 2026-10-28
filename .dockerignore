@@ -1,0 +1,9 @@
+.git
+.env
+data
+venv
+.venv
+tests
+__pycache__
+config/dados.json
+images
